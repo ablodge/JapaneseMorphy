@@ -4,7 +4,7 @@ import re
 from collections import Counter
 
 vocab = Counter()
-
+device = None
 if not torch.cuda.is_available():
     device = torch.device('cuda')
 else:
@@ -121,9 +121,9 @@ def train(data_generator, gru, loss_f, opt, epochs=10, batches=1):
 
 
 gru = nn.Sequential(
-    nn.Embedding(len(vocab) + 1, 256).cuda(device),
-    nn.ReLU().cuda(device),
-    nn.GRU(256, 1, num_layers=3, bidirectional=False, batch_first=True).cuda(device),
+    nn.Embedding(len(vocab) + 1, 256).cuda(),
+    nn.ReLU().cuda(),
+    nn.GRU(256, 1, num_layers=3, bidirectional=False, batch_first=True).cuda(),
 )
 data = train_generator(train_file)
 loss_f = nn.BCELoss()

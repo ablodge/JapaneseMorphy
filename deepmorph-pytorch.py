@@ -5,6 +5,10 @@ from collections import Counter
 
 vocab = Counter()
 
+if not torch.cuda.is_available():
+    device = torch.device('cuda')
+else:
+    device = torch.device('cpu')
 
 train_file = 'train.txt'
 test_file = 'test.txt'
@@ -91,8 +95,8 @@ def train(data_generator, gru, loss_f, opt, epochs=10, batches=1):
                 # zero the parameter gradients
                 opt.zero_grad()
 
-                x_batch = torch.tensor(x_batch, dtype=torch.long).cuda()
-                y_batch = torch.tensor(y_batch, dtype=torch.float32).cuda()
+                x_batch = torch.tensor(x_batch, dtype=torch.long)
+                y_batch = torch.tensor(y_batch, dtype=torch.float32)
 
                 outputs, hn = gru(x_batch)
                 # print(outputs.size())
@@ -117,9 +121,9 @@ def train(data_generator, gru, loss_f, opt, epochs=10, batches=1):
 
 
 gru = nn.Sequential(
-    nn.Embedding(len(vocab) + 1, 256),
-    nn.ReLU(),
-    nn.GRU(256, 1, num_layers=3, bidirectional=False, batch_first=True),
+    nn.Embedding(len(vocab) + 1, 256).cuda(device),
+    nn.ReLU().cuda(device),
+    nn.GRU(256, 1, num_layers=3, bidirectional=False, batch_first=True).cuda(device),
 )
 data = train_generator(train_file)
 loss_f = nn.BCELoss()

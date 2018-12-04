@@ -16,7 +16,7 @@ with open(train_file, 'r', encoding='utf16') as f:
             vocab[ch]+=1
 
 vocab = list(w for w,c in vocab.most_common())
-vocab = vocab[:3000]
+vocab = vocab[:6000]
 print('Vocab:',len(vocab),vocab)
 
 
@@ -60,12 +60,8 @@ def train_generator(file):
             o = re.sub('.[|]','|', o)
             for j,ch in enumerate(o):
                 y.append(1 if ch == '|' else 0)
-            #     y.append(1 if ch == '|' else 0)
             if len(x)!=len(y):
-                # print('Warning',len(x),'!=',len(y))
                 continue
-            # y = torch.tensor(y, dtype=torch.float32)
-            # x = torch.tensor(x, dtype=torch.long)
             yield x, y
 
 
@@ -95,8 +91,8 @@ def train(data_generator, gru, loss_f, opt, epochs=10, batches=1):
                 # zero the parameter gradients
                 opt.zero_grad()
 
-                x_batch = torch.tensor(x_batch, dtype=torch.long)
-                y_batch = torch.tensor(y_batch, dtype=torch.float32)
+                x_batch = torch.tensor(x_batch, dtype=torch.long).cuda()
+                y_batch = torch.tensor(y_batch, dtype=torch.float32).cuda()
 
                 outputs, hn = gru(x_batch)
                 # print(outputs.size())
@@ -121,15 +117,18 @@ def train(data_generator, gru, loss_f, opt, epochs=10, batches=1):
 
 
 gru = nn.Sequential(
-    nn.Embedding(len(vocab) + 1, 8),
+    nn.Embedding(len(vocab) + 1, 256),
     nn.ReLU(),
-    nn.GRU(8, 1, num_layers=1, bidirectional=False, batch_first=True),
+    nn.GRU(256, 1, num_layers=3, bidirectional=False, batch_first=True),
 )
-data = train_generator_word_level(train_file)
+data = train_generator(train_file)
 loss_f = nn.BCELoss()
 opt = torch.optim.Adadelta(gru.parameters())
 print('Loaded Data')
 train(data, gru, loss_f, opt, epochs=10)
+
+
+
 
 
 

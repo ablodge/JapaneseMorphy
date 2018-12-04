@@ -95,8 +95,8 @@ def train(data_generator, gru, loss_f, opt, epochs=10, batches=1):
                 # zero the parameter gradients
                 opt.zero_grad()
 
-                x_batch = torch.tensor(x_batch, dtype=torch.long)
-                y_batch = torch.tensor(y_batch, dtype=torch.float32)
+                x_batch = torch.tensor(x_batch, dtype=torch.long).cuda()
+                y_batch = torch.tensor(y_batch, dtype=torch.float32).cuda()
 
                 outputs, hn = gru(x_batch)
                 # print(outputs.size())

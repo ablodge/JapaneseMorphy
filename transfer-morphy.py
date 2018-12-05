@@ -70,12 +70,14 @@ def train_generator_word_level(file):
             split = line.strip().split('\t')
             if len(split)!=2: continue
             i,o = split
+            o = o.split('|')
+            for tok in o:
+                if not tok: continue
+                x = [vocab.index(ch) if ch in vocab else len(vocab) for ch in tok]
+                y = [0 for _ in tok]
+                y[-1] = 1
+                yield x,y
 
-            x = [vocab.index(ch) if ch in vocab else len(vocab) for ch in i]
-            y = [test_unicode_type(ch) for ch in i]
-            y = np.array(y).astype('float32')
-            x = np.array(x).astype('float32')
-            yield x,y
 
 
 def train_generator(file):
@@ -121,11 +123,11 @@ deep_morph.compile(optimizer=optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.0)
 print(deep_morph.summary())
 
 # Training
-deep_morph.fit_generator(train_generator_word_level(train_file), epochs=100, steps_per_epoch=100)
+deep_morph.fit_generator(train_generator_word_level(train_file), epochs=100, steps_per_epoch=720000)
 
 # Evaluation
-print(deep_morph.evaluate_generator(train_generator_word_level(train_file), steps=128))
-print(deep_morph.evaluate_generator(train_generator_word_level(test_file), steps=128))
+print(deep_morph.evaluate_generator(train_generator_word_level(train_file), steps=180000))
+print(deep_morph.evaluate_generator(train_generator_word_level(test_file), steps=180000))
 
 
 
@@ -147,10 +149,10 @@ deep_morph.compile(optimizer='adadelta', loss='binary_crossentropy', metrics=['a
 print(deep_morph.summary())
 
 # Training
-deep_morph.fit_generator(train_generator(train_file), epochs=100, steps_per_epoch=100)
+deep_morph.fit_generator(train_generator(train_file), epochs=100, steps_per_epoch=720000)
 
 # Evaluation
-print(deep_morph.evaluate_generator(train_generator(train_file), steps=128))
-print(deep_morph.evaluate_generator(train_generator(test_file), steps=128))
+print(deep_morph.evaluate_generator(train_generator(train_file), steps=180000))
+print(deep_morph.evaluate_generator(train_generator(test_file), steps=180000))
 
 

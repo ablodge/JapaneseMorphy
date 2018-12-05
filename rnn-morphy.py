@@ -124,10 +124,8 @@ deep_morph.compile(optimizer='adadelta', loss='binary_crossentropy', metrics=['a
 print(deep_morph.summary())
 
 # Training
-deep_morph.fit_generator(train_generator(train_file), epochs=100, steps_per_epoch=100)
+deep_morph.fit_generator(train_generator(train_file), epochs=100, steps_per_epoch=720000)
 
 # Evaluation
-print(deep_morph.evaluate_generator(train_generator(train_file), steps=128))
-print(deep_morph.evaluate_generator(train_generator(test_file), steps=128))
-
-
+print(deep_morph.evaluate_generator(train_generator(train_file), steps=180000))
+print(deep_morph.evaluate_generator(train_generator(test_file), steps=180000))

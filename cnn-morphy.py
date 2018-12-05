@@ -115,31 +115,8 @@ deep_morph.compile(optimizer='adadelta', loss='binary_crossentropy', metrics=['a
 print(deep_morph.summary())
 
 # Training
-deep_morph.fit_generator(train_generator(train_file), epochs=100, steps_per_epoch=50)
+deep_morph.fit_generator(train_generator(train_file), epochs=100, steps_per_epoch=720000)
 
 # Evaluation
-print(deep_morph.evaluate_generator(train_generator(train_file), steps=128))
-print(deep_morph.evaluate_generator(train_generator(test_file), steps=128))
-
-
-
-'''
-LSTM
-units: Positive integer, dimensionality of the output space.
-activation: Activation function to use (see activations). 
-            Default: hyperbolic tangent (tanh). If you pass None, 
-            no activation is applied (ie. "linear" activation: a(x) = x).
-recurrent_activation: Activation function to use for the recurrent step (see activations). 
-            Default: hard sigmoid (hard_sigmoid). If you pass None, no activation is applied 
-            (ie. "linear" activation: a(x) = x).
-return_sequences: Boolean. Whether to return the last output in the output sequence,
-            or the full sequence.
-return_state: Boolean. Whether to return the last state in addition to the output.
-go_backwards: Boolean (default False). If True, process the input sequence backwards 
-            and return the reversed sequence.
-stateful: Boolean (default False). If True, the last state for each sample at index i in a batch 
-            will be used as initial state for the sample of index i in the following batch.
-unroll: Boolean (default False). If True, the network will be unrolled, else a symbolic loop 
-            will be used. Unrolling can speed-up a RNN, although it tends to be more memory-intensive. 
-            Unrolling is only suitable for short sequences.
-'''
+print(deep_morph.evaluate_generator(train_generator(train_file), steps=180000))
+print(deep_morph.evaluate_generator(train_generator(test_file), steps=180000))

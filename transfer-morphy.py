@@ -76,6 +76,8 @@ def train_generator_word_level(file):
                 x = [vocab.index(ch) if ch in vocab else len(vocab) for ch in tok]
                 y = [0 for _ in tok]
                 y[-1] = 1
+                y = np.array(y).astype('float32')
+                x = np.array(x).astype('float32')
                 yield x,y
 
 
@@ -114,12 +116,11 @@ deep_morph = Sequential()
 # deep_morph.add(Merge([chars, feats]))
 deep_morph.add(emb)
 deep_morph.add(Dropout(0.2))
-deep_morph.add(GRU(4,activation='softmax'))
+deep_morph.add(GRU(1,activation='sigmoid'))
 deep_morph.add(Dropout(0.2))
 
 from keras import optimizers
-deep_morph.compile(optimizer=optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.0)
-                   , loss='categorical_crossentropy', metrics=['accuracy'])
+deep_morph.compile(optimizer='adadelta', loss='binary_crossentropy', metrics=['accuracy',f1,precision,recall])
 print(deep_morph.summary())
 
 # Training
@@ -149,7 +150,7 @@ deep_morph.compile(optimizer='adadelta', loss='binary_crossentropy', metrics=['a
 print(deep_morph.summary())
 
 # Training
-deep_morph.fit_generator(train_generator(train_file), epochs=100, steps_per_epoch=720000)
+deep_morph.fit_generator(train_generator(train_file), epochs=1, steps_per_epoch=720000)
 
 # Evaluation
 print(deep_morph.evaluate_generator(train_generator(train_file), steps=180000))

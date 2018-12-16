@@ -1,2 +1,2 @@
 # JapaneseMorph
-A Deep Learning Mophological Analyser for Japanese
+A Deep Learning Mophological Tokenizer for Japanese
